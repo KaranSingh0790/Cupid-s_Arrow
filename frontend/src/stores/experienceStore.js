@@ -1,0 +1,195 @@
+// Zustand store for experience creation flow
+import { create } from 'zustand'
+import { invokeFunction } from '../lib/supabase'
+
+// Initial content templates
+const INITIAL_CRUSH_CONTENT = {
+    admirationMessages: ['', '', ''],
+    customMessage: '',
+}
+
+const INITIAL_COUPLE_CONTENT = {
+    memories: [
+        { title: '', description: '', date: '' },
+    ],
+    appreciationMessage: '',
+}
+
+export const useExperienceStore = create((set, get) => ({
+    // Experience type selection
+    experienceType: null, // 'CRUSH' | 'COUPLE'
+
+    // Form data
+    senderName: '',
+    recipientName: '',
+    recipientEmail: '',
+    content: {},
+
+    // Created experience data
+    experienceId: null,
+    amountPaise: 0,
+
+    // Payment data
+    paymentOrder: null,
+
+    // UI state
+    isLoading: false,
+    error: null,
+    currentStep: 'select', // 'select' | 'form' | 'preview' | 'payment' | 'success'
+
+    // Actions
+    setExperienceType: (type) => {
+        set({
+            experienceType: type,
+            content: type === 'CRUSH' ? { ...INITIAL_CRUSH_CONTENT } : { ...INITIAL_COUPLE_CONTENT },
+            currentStep: 'form',
+        })
+    },
+
+    setSenderName: (name) => set({ senderName: name }),
+    setRecipientName: (name) => set({ recipientName: name }),
+    setRecipientEmail: (email) => set({ recipientEmail: email }),
+
+    // Update content for CRUSH mode
+    updateAdmirationMessage: (index, message) => {
+        const { content } = get()
+        const messages = [...(content.admirationMessages || [])]
+        messages[index] = message
+        set({ content: { ...content, admirationMessages: messages } })
+    },
+
+    addAdmirationMessage: () => {
+        const { content } = get()
+        const messages = [...(content.admirationMessages || [])]
+        if (messages.length < 5) {
+            messages.push('')
+            set({ content: { ...content, admirationMessages: messages } })
+        }
+    },
+
+    setCustomMessage: (message) => {
+        const { content } = get()
+        set({ content: { ...content, customMessage: message } })
+    },
+
+    // Update content for COUPLE mode
+    updateMemory: (index, field, value) => {
+        const { content } = get()
+        const memories = [...(content.memories || [])]
+        memories[index] = { ...memories[index], [field]: value }
+        set({ content: { ...content, memories } })
+    },
+
+    addMemory: () => {
+        const { content } = get()
+        const memories = [...(content.memories || [])]
+        if (memories.length < 6) {
+            memories.push({ title: '', description: '', date: '' })
+            set({ content: { ...content, memories } })
+        }
+    },
+
+    removeMemory: (index) => {
+        const { content } = get()
+        const memories = [...(content.memories || [])]
+        if (memories.length > 1) {
+            memories.splice(index, 1)
+            set({ content: { ...content, memories } })
+        }
+    },
+
+    setAppreciationMessage: (message) => {
+        const { content } = get()
+        set({ content: { ...content, appreciationMessage: message } })
+    },
+
+    // Create experience via Edge Function
+    createExperience: async () => {
+        const { experienceType, senderName, recipientName, recipientEmail, content } = get()
+
+        set({ isLoading: true, error: null })
+
+        try {
+            const response = await invokeFunction('createExperience', {
+                experience_type: experienceType,
+                sender_name: senderName || null,
+                recipient_name: recipientName,
+                recipient_email: recipientEmail,
+                content,
+            })
+
+            if (!response.success) {
+                throw new Error(response.error || 'Failed to create experience')
+            }
+
+            set({
+                experienceId: response.experience.id,
+                amountPaise: response.experience.amount_paise,
+                currentStep: 'preview',
+                isLoading: false,
+            })
+
+            return response.experience
+        } catch (error) {
+            set({ error: error.message, isLoading: false })
+            throw error
+        }
+    },
+
+    // Create payment via Edge Function
+    createPayment: async () => {
+        const { experienceId } = get()
+
+        if (!experienceId) {
+            throw new Error('No experience to pay for')
+        }
+
+        set({ isLoading: true, error: null })
+
+        try {
+            const response = await invokeFunction('createPayment', {
+                experience_id: experienceId,
+            })
+
+            if (!response.success) {
+                throw new Error(response.error || 'Failed to create payment')
+            }
+
+            set({
+                paymentOrder: response,
+                isLoading: false,
+            })
+
+            return response
+        } catch (error) {
+            set({ error: error.message, isLoading: false })
+            throw error
+        }
+    },
+
+    // Navigation
+    goToStep: (step) => set({ currentStep: step }),
+    goBack: () => {
+        const { currentStep } = get()
+        const steps = ['select', 'form', 'preview', 'payment', 'success']
+        const currentIndex = steps.indexOf(currentStep)
+        if (currentIndex > 0) {
+            set({ currentStep: steps[currentIndex - 1] })
+        }
+    },
+
+    // Reset store
+    reset: () => set({
+        experienceType: null,
+        senderName: '',
+        recipientName: '',
+        recipientEmail: '',
+        content: {},
+        experienceId: null,
+        amountPaise: 0,
+        paymentOrder: null,
+        isLoading: false,
+        error: null,
+        currentStep: 'select',
+    }),
+}))

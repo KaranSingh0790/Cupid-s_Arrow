@@ -1,0 +1,297 @@
+@import "tailwindcss";
+
+/* ===========================================
+   CUPID'S ARROW - Custom CSS Theme
+   Color palette inspired by reference image:
+   - Soft pinks, warm corals, cream whites
+   =========================================== */
+
+/* CSS Custom Properties for design tokens */
+:root {
+  /* Primary colors - romantic pinks/corals */
+  --color-rose-50: #fff1f2;
+  --color-rose-100: #ffe4e6;
+  --color-rose-200: #fecdd3;
+  --color-rose-300: #fda4af;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+  
+  /* Background gradients */
+  --gradient-romantic: linear-gradient(135deg, #fff5f5 0%, #ffeef0 50%, #fff1f2 100%);
+  --gradient-button: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+  --gradient-sunset: linear-gradient(180deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%);
+  
+  /* Shadows */
+  --shadow-soft: 0 4px 24px rgba(244, 63, 94, 0.1);
+  --shadow-button: 0 4px 16px rgba(244, 63, 94, 0.3);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+  
+  /* Typography */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--gradient-romantic);
+  min-height: 100vh;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffeef0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #fda4af;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fb7185;
+}
+
+/* ===========================================
+   ANIMATION KEYFRAMES
+   =========================================== */
+
+/* Floating animation for petals */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+/* Gentle pulse for hearts */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Fade in with slide up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Petal falling animation */
+@keyframes petalFall {
+  0% {
+    opacity: 1;
+    transform: translateY(-100vh) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-petal-fall {
+  animation: petalFall linear infinite;
+}
+
+/* Glass morphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Primary button style */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px;
+  background: var(--gradient-button);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: var(--shadow-button);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(244, 63, 94, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary button style */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  background: white;
+  color: #f43f5e;
+  font-weight: 600;
+  font-size: 16px;
+  border: 2px solid #fda4af;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #fff5f5;
+  border-color: #fb7185;
+}
+
+/* Input styles */
+.input-romantic {
+  width: 100%;
+  padding: 16px 20px;
+  background: white;
+  border: 2px solid #fecdd3;
+  border-radius: 16px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.input-romantic:focus {
+  outline: none;
+  border-color: #fb7185;
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.1);
+}
+
+.input-romantic::placeholder {
+  color: #fda4af;
+}
+
+/* Textarea styles */
+.textarea-romantic {
+  width: 100%;
+  padding: 16px 20px;
+  background: white;
+  border: 2px solid #fecdd3;
+  border-radius: 16px;
+  font-size: 16px;
+  resize: vertical;
+  min-height: 120px;
+  transition: all 0.3s ease;
+}
+
+.textarea-romantic:focus {
+  outline: none;
+  border-color: #fb7185;
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.1);
+}
+
+/* ===========================================
+   PETAL OVERLAY COMPONENT STYLES
+   =========================================== */
+
+.petal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.petal {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #fda4af, #fb7185);
+  border-radius: 50% 0 50% 50%;
+  opacity: 0.7;
+  animation: petalFall linear infinite;
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================== */
+
+@media (max-width: 768px) {
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    padding: 14px 24px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
