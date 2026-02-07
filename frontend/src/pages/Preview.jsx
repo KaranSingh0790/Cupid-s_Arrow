@@ -62,7 +62,7 @@ export default function Preview() {
                         className="text-center mb-6"
                     >
                         <h1 className="section-heading" style={{ marginTop: '2rem' }}>Preview Your Experience</h1>
-                        <p className="section-subheading" style={{ marginBottom: '1.5rem' }}>
+                        <p style={{ marginBottom: '1.5rem' }}>
                             See exactly what {recipientName} will receive
                         </p>
                     </motion.div>

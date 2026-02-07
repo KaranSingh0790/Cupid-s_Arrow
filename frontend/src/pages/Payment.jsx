@@ -126,7 +126,7 @@ export default function Payment() {
                             <span>💝</span>
                         </div>
                         <h1 className="section-heading">Complete Your Order</h1>
-                        <p className="section-subheading" style={{ marginBottom: '2.5rem' }}>
+                        <p style={{ marginBottom: '2.5rem' }}>
                             Send your personalized experience to <strong style={{ color: 'var(--color-gray-700)' }}>{recipientName}</strong>
                         </p>
                     </motion.div>

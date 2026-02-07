@@ -18,9 +18,7 @@ export default function ExperienceBuilder() {
         recipientEmail,
         senderName,
         createExperience,
-        // Crush mode
         setCrushNote,
-        // Couple mode - memories with photos
         updateMemory,
         updateMemoryPhoto,
         addMemory,
@@ -31,7 +29,6 @@ export default function ExperienceBuilder() {
     const [errors, setErrors] = useState({})
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // Redirect if no experience type selected
     useEffect(() => {
         if (!experienceType) {
             navigate('/create')
@@ -54,10 +51,7 @@ export default function ExperienceBuilder() {
         }
 
         if (experienceType === 'CRUSH') {
-            // Crush mode just needs a note (optional but encouraged)
-            // No strict validation - they can send with just the proposal
         } else {
-            // Couple mode needs at least one memory or love message
             const memories = content.memories?.filter(m => m?.title?.trim()) || []
             const messages = content.admirationMessages?.filter(m => m?.trim()) || []
             if (memories.length === 0 && messages.length === 0) {
@@ -90,7 +84,6 @@ export default function ExperienceBuilder() {
 
             <div className="page-container relative z-10 flex items-center justify-center" style={{ minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
                 <div className="w-full" style={{ maxWidth: '480px', paddingLeft: '1.25rem', paddingRight: '1.25rem' }}>
-                    {/* Progress Bar */}
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -105,7 +98,6 @@ export default function ExperienceBuilder() {
                         </div>
                     </motion.div>
 
-                    {/* Header */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -116,22 +108,19 @@ export default function ExperienceBuilder() {
                             <span>{experienceType === 'CRUSH' ? '❤️' : '💝'}</span>
                         </div>
                         <h1 className="section-heading">Craft Your Romantic Message</h1>
-                        <p className="section-subheading" style={{ marginBottom: '2rem' }}>
+                        <p style={{ marginBottom: '2rem' }}>
                             Share the magic that makes your bond unique
                         </p>
                     </motion.div>
 
-                    {/* Form Sections */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                         className="space-y-6"
                     >
-                        {/* Basic Information Section */}
                         <div className="form-section text-left">
                             <div className="form-section-header" style={{ justifyContent: 'flex-start' }}>
-                                {/* <span className="form-section-title">Basic Information</span> */}
                             </div>
 
                             <div className="space-y-5 mt-5">
@@ -185,7 +174,6 @@ export default function ExperienceBuilder() {
                             </div>
                         </div>
 
-                        {/* Mode-specific fields */}
                         {experienceType === 'CRUSH' ? (
                             <CrushModeFields
                                 content={content}
@@ -205,7 +193,6 @@ export default function ExperienceBuilder() {
                         )}
                     </motion.div>
 
-                    {/* Submit error */}
                     <AnimatePresence>
                         {errors.submit && (
                             <motion.div
@@ -225,7 +212,6 @@ export default function ExperienceBuilder() {
                         )}
                     </AnimatePresence>
 
-                    {/* Action buttons */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

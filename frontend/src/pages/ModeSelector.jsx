@@ -46,7 +46,7 @@ export default function ModeSelector() {
                         <h1 className="section-heading" style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
                             Who's it for?
                         </h1>
-                        <p className="section-subheading" style={{ marginBottom: '0' }}>
+                        <p style={{ marginBottom: '0' }}>
                             Choose how you want to express your feelings
                         </p>
                     </motion.div>
