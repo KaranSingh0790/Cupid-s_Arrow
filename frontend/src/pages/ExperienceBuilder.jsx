@@ -13,10 +13,12 @@ export default function ExperienceBuilder() {
         setRecipientName,
         setRecipientEmail,
         setSenderName,
+        setSenderEmail,
         content,
         recipientName,
         recipientEmail,
         senderName,
+        senderEmail,
         createExperience,
         setCrushNote,
         updateMemory,
@@ -133,6 +135,18 @@ export default function ExperienceBuilder() {
                                         placeholder="Enter your name"
                                         className="input-romantic"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="form-label">Your Email (optional)</label>
+                                    <input
+                                        type="email"
+                                        value={senderEmail}
+                                        onChange={(e) => setSenderEmail(e.target.value)}
+                                        placeholder="your.email@example.com"
+                                        className="input-romantic"
+                                    />
+                                    <p className="text-pink-500 text-xs">Get notified when they respond 💌</p>
                                 </div>
 
                                 <div>

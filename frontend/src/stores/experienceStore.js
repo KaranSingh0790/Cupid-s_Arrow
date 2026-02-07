@@ -21,6 +21,7 @@ export const useExperienceStore = create((set, get) => ({
 
     // Form data
     senderName: '',
+    senderEmail: '',
     recipientName: '',
     recipientEmail: '',
     content: {},
@@ -43,6 +44,7 @@ export const useExperienceStore = create((set, get) => ({
         set({
             experienceType: type,
             senderName: '',
+            senderEmail: '',
             recipientName: '',
             recipientEmail: '',
             content: type === 'CRUSH' ? { ...INITIAL_CRUSH_CONTENT } : { ...INITIAL_COUPLE_CONTENT },
@@ -55,6 +57,7 @@ export const useExperienceStore = create((set, get) => ({
     },
 
     setSenderName: (name) => set({ senderName: name }),
+    setSenderEmail: (email) => set({ senderEmail: email }),
     setRecipientName: (name) => set({ recipientName: name }),
     setRecipientEmail: (email) => set({ recipientEmail: email }),
 
@@ -104,7 +107,7 @@ export const useExperienceStore = create((set, get) => ({
 
     // Create experience via Edge Function
     createExperience: async () => {
-        const { experienceType, senderName, recipientName, recipientEmail, content } = get()
+        const { experienceType, senderName, senderEmail, recipientName, recipientEmail, content } = get()
 
         set({ isLoading: true, error: null })
 
@@ -112,6 +115,7 @@ export const useExperienceStore = create((set, get) => ({
             const response = await invokeFunction('createExperience', {
                 experience_type: experienceType,
                 sender_name: senderName || null,
+                sender_email: senderEmail || null,
                 recipient_name: recipientName,
                 recipient_email: recipientEmail,
                 content,
@@ -181,6 +185,7 @@ export const useExperienceStore = create((set, get) => ({
     reset: () => set({
         experienceType: null,
         senderName: '',
+        senderEmail: '',
         recipientName: '',
         recipientEmail: '',
         content: {},

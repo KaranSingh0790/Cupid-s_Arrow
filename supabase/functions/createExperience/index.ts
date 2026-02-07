@@ -20,6 +20,7 @@ const PRICING = {
 interface CreateExperienceRequest {
   experience_type: "CRUSH" | "COUPLE";
   sender_name?: string;
+  sender_email?: string;
   recipient_name: string;
   recipient_email: string;
   content: {
@@ -100,6 +101,7 @@ serve(async (req) => {
         experience_type: body.experience_type,
         lifecycle_state: "DRAFT",
         sender_name: body.sender_name?.trim() || null,
+        sender_email: body.sender_email?.toLowerCase().trim() || null,
         recipient_name: body.recipient_name.trim(),
         recipient_email: body.recipient_email.toLowerCase().trim(),
         content: body.content,

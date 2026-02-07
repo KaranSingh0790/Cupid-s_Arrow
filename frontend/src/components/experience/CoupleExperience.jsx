@@ -328,27 +328,72 @@ export default function CoupleExperience({
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="experience-card"
+                        style={{ padding: '2.5rem 2rem' }}
                     >
                         <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 0.5, repeat: 3 }}
-                            className="text-6xl mb-4"
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ duration: 0.6, repeat: 2 }}
+                            className="text-5xl mb-6"
                         >
-                            💑✨💕
+                            💕
                         </motion.div>
 
                         <h2
                             className="section-heading"
-                            style={{ color: 'var(--color-primary)' }}
+                            style={{ color: 'var(--color-primary)', marginBottom: '1rem' }}
                         >
                             Forever & Always
                         </h2>
 
-                        <p style={{ color: 'var(--color-gray-600)', margin: '0.5rem 0 1.5rem' }}>
+                        <p style={{
+                            color: 'var(--color-gray-600)',
+                            lineHeight: 1.7,
+                            marginBottom: '2rem'
+                        }}>
                             Your love story continues to inspire.
                             Thank you for being each other's everything.
                         </p>
 
+                        {/* Create for them CTA - Viral loop */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="w-full"
+                        >
+                            <div
+                                className="rounded-2xl"
+                                style={{
+                                    background: 'var(--color-rose-50)',
+                                    padding: '1.25rem',
+                                    marginBottom: '1.25rem'
+                                }}
+                            >
+                                <p style={{
+                                    fontSize: '0.95rem',
+                                    color: 'var(--color-gray-700)',
+                                    marginBottom: '0.5rem',
+                                    fontWeight: 500
+                                }}>
+                                    Want to surprise {senderName || 'them'} back?
+                                </p>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
+                                    Create your own special experience for them
+                                </p>
+                            </div>
+
+                            <a
+                                href={`/create?for=${encodeURIComponent(senderName || '')}&type=COUPLE`}
+                                className="btn-primary w-full inline-flex items-center justify-center"
+                                style={{
+                                    textDecoration: 'none',
+                                    padding: '1rem 2rem',
+                                    fontSize: '1rem'
+                                }}
+                            >
+                                Create One for {senderName || 'Them'} →
+                            </a>
+                        </motion.div>
 
                     </motion.div>
                 )}

@@ -1,13 +1,30 @@
 // Mode Selector - Choose between Crush and Couple mode
 // Clean design with proper spacing and details
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useExperienceStore } from '../stores/experienceStore'
 import { FloatingPetals } from '../components/animations/Petals'
 
 export default function ModeSelector() {
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const setExperienceType = useExperienceStore((state) => state.setExperienceType)
+    const setRecipientName = useExperienceStore((state) => state.setRecipientName)
+
+    // Auto-select mode if type param is present (e.g., from "Create for them" CTA)
+    useEffect(() => {
+        const typeParam = searchParams.get('type')
+        const forParam = searchParams.get('for')
+
+        if (typeParam === 'COUPLE' || typeParam === 'CRUSH') {
+            setExperienceType(typeParam)
+            if (forParam) {
+                setRecipientName(forParam)
+            }
+            navigate('/create/form')
+        }
+    }, [searchParams, setExperienceType, setRecipientName, navigate])
 
     const handleSelectMode = (mode) => {
         setExperienceType(mode)

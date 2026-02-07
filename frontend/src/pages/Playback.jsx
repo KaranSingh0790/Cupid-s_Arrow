@@ -122,6 +122,7 @@ export default function Playback() {
                             content={experience.content}
                             isPreview={false}
                             onResponse={handleResponse}
+                            experienceId={id}
                         />
                     ) : (
                         <CoupleExperience
