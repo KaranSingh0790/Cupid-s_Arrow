@@ -113,19 +113,8 @@ export default function Playback() {
         <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
             <FloatingPetals count={12} />
 
-            {/* Minimal header for branding */}
-            <div
-                className="fixed top-0 left-0 right-0 z-50 py-4 text-center"
-                style={{ background: 'rgba(254, 247, 245, 0.95)', backdropFilter: 'blur(8px)' }}
-            >
-                <Link to="/" className="nav-logo inline-flex">
-                    <span className="nav-logo-heart">❤️</span>
-                    <span>Valentine's Experience</span>
-                </Link>
-            </div>
-
-            <div className="relative z-10 min-h-screen pt-20 pb-16 px-4">
-                <div className="max-w-xl mx-auto">
+            <div className="relative z-10 min-h-screen pt-8 pb-16 px-4">
+                <div className="max-w-md mx-auto">
                     {experience.experience_type === 'CRUSH' ? (
                         <CrushExperience
                             recipientName={experience.recipient_name}

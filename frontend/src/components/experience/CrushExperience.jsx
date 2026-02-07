@@ -254,7 +254,7 @@ export default function CrushExperience({
                         )}
 
                         <div className="flex flex-col items-center w-full">
-                            <div className="relative min-h-[240px] flex flex-row items-center justify-center gap-12 w-full">
+                            <div className="relative min-h-[300px] flex flex-row items-center justify-center gap-8 w-full">
                                 {/* Yes Button - grows bigger as they try to click No */}
                                 <motion.button
                                     animate={{ scale: yesButtonScale }}
@@ -262,16 +262,18 @@ export default function CrushExperience({
                                     whileTap={{ scale: isPreview ? yesButtonScale : yesButtonScale * 0.98 }}
                                     onClick={handleYes}
                                     disabled={isPreview}
-                                    className="btn-primary px-12"
+                                    className="btn-primary"
                                     style={{
                                         opacity: isPreview ? 0.5 : 1,
-                                        fontSize: `${0.875 + (yesButtonScale - 1) * 0.3}rem`
+                                        fontSize: `${1.25 + (yesButtonScale - 1) * 0.3}rem`,
+                                        padding: '1.5rem 4rem',
+                                        fontWeight: 700
                                     }}
                                 >
-                                    Yes
+                                    YES
                                 </motion.button>
 
-                                {/* No Button - runs away on hover! */}
+                                {/* No Button - runs away on hover/tap! */}
                                 <motion.button
                                     animate={{
                                         x: noButtonPosition.x,
@@ -279,12 +281,14 @@ export default function CrushExperience({
                                     }}
                                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                     onHoverStart={handleNoHover}
-                                    onClick={handleNo}
+                                    onClick={handleNoHover}
                                     disabled={isPreview}
                                     className="btn-secondary"
                                     style={{
                                         opacity: isPreview ? 0.5 : 1,
-                                        cursor: isPreview ? 'not-allowed' : 'pointer'
+                                        cursor: isPreview ? 'not-allowed' : 'pointer',
+                                        padding: '1rem 2.5rem',
+                                        fontSize: '1rem'
                                     }}
                                 >
                                     No
