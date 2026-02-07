@@ -29,7 +29,7 @@ export default function CrushExperience({
     const { fadeIn, fadeOut } = useRomanticMusic()
 
     const note = content.note || ''
-    const maxNoAttempts = 5
+    const maxNoAttempts = 50
 
     // Fade out music when reaching response stage
     useEffect(() => {
@@ -332,18 +332,11 @@ export default function CrushExperience({
                         >
                             {finalResponse === 'YES' ? (
                                 <>
-                                    <motion.div
-                                        animate={{ scale: [1, 1.2, 1] }}
-                                        transition={{ duration: 0.5, repeat: 3 }}
-                                        className="text-6xl mb-4"
-                                    >
-                                        🎉💕🎉
-                                    </motion.div>
                                     <h2
                                         className="section-heading"
                                         style={{ color: 'var(--color-primary)' }}
                                     >
-                                        Yay!!!
+                                        Yay!!! 💕
                                     </h2>
                                     <p style={{ color: 'var(--color-gray-600)', marginTop: '0.5rem', lineHeight: 1.6 }}>
                                         This is the beginning of something beautiful!
