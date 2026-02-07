@@ -4,13 +4,13 @@ import { invokeFunction } from '../lib/supabase'
 
 // Initial content templates
 const INITIAL_CRUSH_CONTENT = {
-    admirationMessages: ['', '', ''],
-    customMessage: '',
+    note: '', // Simple note to send to crush
 }
 
 const INITIAL_COUPLE_CONTENT = {
+    // Memories timeline with photos
     memories: [
-        { title: '', description: '', date: '' },
+        { title: '', description: '', date: '', photo: null },
     ],
     appreciationMessage: '',
 }
@@ -39,9 +39,17 @@ export const useExperienceStore = create((set, get) => ({
 
     // Actions
     setExperienceType: (type) => {
+        // Reset ALL form data when selecting a mode
         set({
             experienceType: type,
+            senderName: '',
+            recipientName: '',
+            recipientEmail: '',
             content: type === 'CRUSH' ? { ...INITIAL_CRUSH_CONTENT } : { ...INITIAL_COUPLE_CONTENT },
+            experienceId: null,
+            amountPaise: 0,
+            paymentOrder: null,
+            error: null,
             currentStep: 'form',
         })
     },
@@ -51,28 +59,12 @@ export const useExperienceStore = create((set, get) => ({
     setRecipientEmail: (email) => set({ recipientEmail: email }),
 
     // Update content for CRUSH mode
-    updateAdmirationMessage: (index, message) => {
+    setCrushNote: (note) => {
         const { content } = get()
-        const messages = [...(content.admirationMessages || [])]
-        messages[index] = message
-        set({ content: { ...content, admirationMessages: messages } })
+        set({ content: { ...content, note } })
     },
 
-    addAdmirationMessage: () => {
-        const { content } = get()
-        const messages = [...(content.admirationMessages || [])]
-        if (messages.length < 5) {
-            messages.push('')
-            set({ content: { ...content, admirationMessages: messages } })
-        }
-    },
-
-    setCustomMessage: (message) => {
-        const { content } = get()
-        set({ content: { ...content, customMessage: message } })
-    },
-
-    // Update content for COUPLE mode
+    // Update content for COUPLE mode - Memories with photos
     updateMemory: (index, field, value) => {
         const { content } = get()
         const memories = [...(content.memories || [])]
@@ -80,11 +72,18 @@ export const useExperienceStore = create((set, get) => ({
         set({ content: { ...content, memories } })
     },
 
+    updateMemoryPhoto: (index, photoUrl) => {
+        const { content } = get()
+        const memories = [...(content.memories || [])]
+        memories[index] = { ...memories[index], photo: photoUrl }
+        set({ content: { ...content, memories } })
+    },
+
     addMemory: () => {
         const { content } = get()
         const memories = [...(content.memories || [])]
         if (memories.length < 6) {
-            memories.push({ title: '', description: '', date: '' })
+            memories.push({ title: '', description: '', date: '', photo: null })
             set({ content: { ...content, memories } })
         }
     },

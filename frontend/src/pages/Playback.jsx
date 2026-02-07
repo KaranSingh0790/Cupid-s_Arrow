@@ -1,6 +1,7 @@
 // Playback Page - The actual experience recipient sees (/v/:id)
+// Elegant immersive experience design
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getExperience, supabase } from '../lib/supabase'
 import { FloatingPetals } from '../components/animations/Petals'
@@ -64,39 +65,66 @@ export default function Playback() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div
+                className="min-h-screen flex flex-col items-center justify-center"
+                style={{ background: 'var(--bg-main)' }}
+            >
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="text-4xl"
+                    className="text-4xl mb-4"
                 >
                     💕
                 </motion.div>
+                <p style={{ color: 'var(--color-gray-500)', fontSize: '0.875rem' }}>
+                    Loading your experience...
+                </p>
             </div>
         )
     }
 
     if (error || !experience) {
         return (
-            <div className="min-h-screen flex items-center justify-center px-4">
-                <div className="glass-card p-8 max-w-md text-center">
-                    <div className="text-5xl mb-4">💔</div>
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            <div
+                className="min-h-screen flex items-center justify-center px-4"
+                style={{ background: 'var(--bg-main)' }}
+            >
+                <div className="experience-card">
+                    <div className="icon-circle icon-circle-lg mx-auto">
+                        <span>💔</span>
+                    </div>
+                    <h1 className="section-heading" style={{ fontSize: '1.75rem' }}>
                         Experience Not Found
                     </h1>
-                    <p className="text-gray-600">
+                    <p style={{ color: 'var(--color-gray-600)', marginBottom: '1.5rem' }}>
                         {error || 'This link may have expired or is invalid.'}
                     </p>
+                    <Link to="/">
+                        <button className="btn-secondary">
+                            Go to Home
+                        </button>
+                    </Link>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen relative overflow-hidden">
-            <FloatingPetals count={15} />
+        <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
+            <FloatingPetals count={12} />
 
-            <div className="relative z-10 min-h-screen py-8 px-4">
+            {/* Minimal header for branding */}
+            <div
+                className="fixed top-0 left-0 right-0 z-50 py-4 text-center"
+                style={{ background: 'rgba(254, 247, 245, 0.95)', backdropFilter: 'blur(8px)' }}
+            >
+                <Link to="/" className="nav-logo inline-flex">
+                    <span className="nav-logo-heart">❤️</span>
+                    <span>Valentine's Experience</span>
+                </Link>
+            </div>
+
+            <div className="relative z-10 min-h-screen pt-20 pb-16 px-4">
                 <div className="max-w-xl mx-auto">
                     {experience.experience_type === 'CRUSH' ? (
                         <CrushExperience
@@ -117,6 +145,8 @@ export default function Playback() {
                     )}
                 </div>
             </div>
+
+
         </div>
     )
 }

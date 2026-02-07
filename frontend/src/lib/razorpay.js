@@ -35,7 +35,7 @@ export async function initializePayment(orderDetails, onSuccess, onFailure) {
             order_id: orderDetails.order.id,
             name: "Cupid's Arrow",
             description: 'Send a romantic experience',
-            image: '/heart-logo.svg',
+            // image: '/heart-logo.svg', // CORS issue on localhost, using default or text
             handler: function (response) {
                 // Payment successful
                 onSuccess({

@@ -1,6 +1,7 @@
-// Mode Selector Page - Choose between Crush and Couple mode
+// Mode Selector - Choose between Crush and Couple mode
+// Clean design with proper spacing and details
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useExperienceStore } from '../stores/experienceStore'
 import { FloatingPetals } from '../components/animations/Petals'
 
@@ -14,91 +15,187 @@ export default function ModeSelector() {
     }
 
     return (
-        <div className="min-h-screen relative overflow-hidden">
-            <FloatingPetals count={10} />
+        <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
+            <FloatingPetals count={6} />
 
-            <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-16">
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
-                >
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-                        Choose Your Experience
-                    </h1>
-                    <p className="text-gray-600">
-                        What kind of message would you like to send?
-                    </p>
-                </motion.div>
-
-                {/* Mode cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl w-full px-4">
-                    {/* Crush Mode Card */}
+            <div className="page-container relative z-10 flex items-center justify-center" style={{ minHeight: '100vh', padding: '3rem 1rem' }}>
+                <div className="w-full" style={{ maxWidth: '480px' }}>
+                    {/* Progress Bar */}
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        whileHover={{ scale: 1.02, y: -4 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleSelectMode('CRUSH')}
-                        className="glass-card p-8 cursor-pointer group"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="progress-container"
                     >
-                        <div className="text-5xl mb-4 group-hover:animate-heartbeat">💕</div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Crush Mode</h2>
-                        <p className="text-gray-600 mb-4">
-                            A secret admiration reveal with a playful Valentine proposal.
-                            Perfect for confessing your feelings.
-                        </p>
-                        <div className="flex items-center justify-between">
-                            <span className="text-2xl font-bold text-rose-500">₹49</span>
-                            <span className="text-sm text-gray-400">One-time</span>
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-gray-100">
-                            <p className="text-xs text-gray-400">
-                                ✨ Name reveal • 💌 Sweet messages • 💘 Yes/No interaction
-                            </p>
+                        <div className="progress-bar-wrapper">
+                            <span className="progress-step-text">Step 1 of 4</span>
+                            <div className="progress-bar">
+                                <div className="progress-fill" style={{ width: '25%' }}></div>
+                            </div>
+                            <span className="progress-label">Choose Mode</span>
                         </div>
                     </motion.div>
 
-                    {/* Couple Mode Card */}
+                    {/* Header */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                        whileHover={{ scale: 1.02, y: -4 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleSelectMode('COUPLE')}
-                        className="glass-card p-8 cursor-pointer group"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-center"
+                        style={{ marginTop: '2.5rem', marginBottom: '2.5rem' }}
                     >
-                        <div className="text-5xl mb-4 group-hover:animate-heartbeat">💑</div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Couple Mode</h2>
-                        <p className="text-gray-600 mb-4">
-                            A beautiful timeline of your memories together with a heartfelt
-                            appreciation message.
+                        <h1 className="section-heading" style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
+                            Who's it for?
+                        </h1>
+                        <p className="section-subheading" style={{ marginBottom: '0' }}>
+                            Choose how you want to express your feelings
                         </p>
-                        <div className="flex items-center justify-between">
-                            <span className="text-2xl font-bold text-rose-500">₹99</span>
-                            <span className="text-sm text-gray-400">One-time</span>
-                        </div>
-                        <div className="mt-4 pt-4 border-t border-gray-100">
-                            <p className="text-xs text-gray-400">
-                                📸 Memory timeline • 💝 Appreciation • ❤️ Reaffirmation
-                            </p>
-                        </div>
+                    </motion.div>
+
+                    {/* Mode Selection Cards */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {/* Crush Option */}
+                        <motion.button
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            whileHover={{ scale: 1.01, y: -2 }}
+                            whileTap={{ scale: 0.99 }}
+                            onClick={() => handleSelectMode('CRUSH')}
+                            style={{
+                                width: '100%',
+                                padding: '1.25rem',
+                                paddingRight: '1.5rem',
+                                borderRadius: '1rem',
+                                textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
+                                background: 'white',
+                                border: '1px solid var(--color-gray-100)',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    flexShrink: 0,
+                                    width: '56px',
+                                    height: '56px',
+                                    borderRadius: '1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'linear-gradient(135deg, #FFF5F5 0%, #FFE4E8 100%)'
+                                }}
+                            >
+                                <span style={{ fontSize: '1.75rem' }}>💕</span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h3 style={{
+                                    fontSize: '1.0625rem',
+                                    fontWeight: 600,
+                                    color: 'var(--color-gray-900)',
+                                    marginBottom: '0.25rem'
+                                }}>
+                                    Your Crush
+                                </h3>
+                                <p style={{
+                                    fontSize: '0.875rem',
+                                    color: 'var(--color-gray-500)',
+                                    lineHeight: 1.4,
+                                    margin: 0
+                                }}>
+                                    Send a secret admiration or reveal yourself with a playful proposal
+                                </p>
+                            </div>
+                            <div style={{
+                                flexShrink: 0,
+                                color: 'var(--color-primary)',
+                                fontSize: '1.25rem',
+                                marginLeft: '0.5rem'
+                            }}>
+                                →
+                            </div>
+                        </motion.button>
+
+                        {/* Partner Option */}
+                        <motion.button
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            whileHover={{ scale: 1.01, y: -2 }}
+                            whileTap={{ scale: 0.99 }}
+                            onClick={() => handleSelectMode('COUPLE')}
+                            style={{
+                                width: '100%',
+                                padding: '1.25rem',
+                                paddingRight: '1.5rem',
+                                borderRadius: '1rem',
+                                textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
+                                background: 'white',
+                                border: '1px solid var(--color-gray-100)',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    flexShrink: 0,
+                                    width: '56px',
+                                    height: '56px',
+                                    borderRadius: '1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'linear-gradient(135deg, #FFF0F3 0%, #FFE0E6 100%)'
+                                }}
+                            >
+                                <span style={{ fontSize: '1.75rem' }}>💑</span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h3 style={{
+                                    fontSize: '1.0625rem',
+                                    fontWeight: 600,
+                                    color: 'var(--color-gray-900)',
+                                    marginBottom: '0.25rem'
+                                }}>
+                                    Your Partner
+                                </h3>
+                                <p style={{
+                                    fontSize: '0.875rem',
+                                    color: 'var(--color-gray-500)',
+                                    lineHeight: 1.4,
+                                    margin: 0
+                                }}>
+                                    Create a timeline of memories and make their valentines special
+                                </p>
+                            </div>
+                            <div style={{
+                                flexShrink: 0,
+                                color: 'var(--color-primary)',
+                                fontSize: '1.25rem',
+                                marginLeft: '0.5rem'
+                            }}>
+                                →
+                            </div>
+                        </motion.button>
+                    </div>
+
+                    {/* Back button */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        style={{ marginTop: '2.5rem', textAlign: 'center' }}
+                    >
+                        <Link to="/" className="btn-ghost">
+                            ← Back to Previous
+                        </Link>
                     </motion.div>
                 </div>
-
-                {/* Back link */}
-                <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    onClick={() => navigate('/')}
-                    className="mt-10 text-gray-500 hover:text-gray-700 text-sm"
-                >
-                    ← Back to home
-                </motion.button>
             </div>
         </div>
     )

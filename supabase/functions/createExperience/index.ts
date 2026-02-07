@@ -23,15 +23,17 @@ interface CreateExperienceRequest {
   recipient_name: string;
   recipient_email: string;
   content: {
-    // CRUSH mode
-    admirationMessages?: string[];
-    customMessage?: string;
-    // COUPLE mode
+    // CRUSH mode - simple note
+    note?: string;
+    // COUPLE mode - memories with photos + appreciation
     memories?: Array<{
       title: string;
       description: string;
       date?: string;
+      photo?: string; // Base64 or URL
     }>;
+    admirationMessages?: string[];
+    admirationPhotos?: string[];
     appreciationMessage?: string;
   };
 }
@@ -46,7 +48,7 @@ serve(async (req) => {
     // Initialize Supabase client with service role
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Parse request body
@@ -75,17 +77,14 @@ serve(async (req) => {
     }
 
     // Validate content based on experience type
-    if (body.experience_type === "CRUSH") {
-      if (!body.content.admirationMessages || body.content.admirationMessages.length < 1) {
+    // CRUSH mode is lenient - note is optional, users can send just the Valentine proposal
+    // COUPLE mode requires at least some content
+    if (body.experience_type === "COUPLE") {
+      const hasMemories = body.content.memories?.some(m => m?.title?.trim());
+      const hasMessages = body.content.admirationMessages?.some(m => m?.trim());
+      if (!hasMemories && !hasMessages) {
         return new Response(
-          JSON.stringify({ error: "At least one admiration message is required for CRUSH mode" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    } else if (body.experience_type === "COUPLE") {
-      if (!body.content.memories || body.content.memories.length < 1) {
-        return new Response(
-          JSON.stringify({ error: "At least one memory is required for COUPLE mode" }),
+          JSON.stringify({ error: "At least one memory or love message is required for COUPLE mode" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }

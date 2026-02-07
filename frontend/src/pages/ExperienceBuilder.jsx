@@ -1,374 +1,506 @@
-// Experience Builder Form - Create your experience
-import { useState } from 'react'
+// Experience Builder - Form page for creating the experience
+// Elegant design matching reference screenshots
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useExperienceStore } from '../stores/experienceStore'
+import { FloatingPetals } from '../components/animations/Petals'
 
 export default function ExperienceBuilder() {
     const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [validationError, setValidationError] = useState(null)
-
     const {
         experienceType,
-        senderName,
-        recipientName,
-        recipientEmail,
-        content,
-        setSenderName,
         setRecipientName,
         setRecipientEmail,
-        updateAdmirationMessage,
-        addAdmirationMessage,
-        setCustomMessage,
+        setSenderName,
+        content,
+        recipientName,
+        recipientEmail,
+        senderName,
+        createExperience,
+        // Crush mode
+        setCrushNote,
+        // Couple mode - memories with photos
         updateMemory,
+        updateMemoryPhoto,
         addMemory,
         removeMemory,
         setAppreciationMessage,
-        createExperience,
-        error,
     } = useExperienceStore()
 
-    // Redirect if no type selected
-    if (!experienceType) {
-        navigate('/create')
-        return null
-    }
+    const [errors, setErrors] = useState({})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Redirect if no experience type selected
+    useEffect(() => {
+        if (!experienceType) {
+            navigate('/create')
+        }
+    }, [experienceType, navigate])
+
+    if (!experienceType) return null
 
     const validateForm = () => {
-        if (!recipientName.trim()) {
-            setValidationError('Please enter their name')
-            return false
+        const newErrors = {}
+
+        if (!recipientName?.trim()) {
+            newErrors.recipientName = 'Their name is required'
         }
-        if (!recipientEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
-            setValidationError('Please enter a valid email address')
-            return false
+
+        if (!recipientEmail?.trim()) {
+            newErrors.recipientEmail = 'Email is required'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
+            newErrors.recipientEmail = 'Please enter a valid email'
         }
 
         if (experienceType === 'CRUSH') {
-            const validMessages = content.admirationMessages?.filter(m => m.trim().length > 0)
-            if (!validMessages || validMessages.length < 1) {
-                setValidationError('Please add at least one admiration message')
-                return false
-            }
+            // Crush mode just needs a note (optional but encouraged)
+            // No strict validation - they can send with just the proposal
         } else {
-            const validMemories = content.memories?.filter(m => m.title.trim() && m.description.trim())
-            if (!validMemories || validMemories.length < 1) {
-                setValidationError('Please add at least one memory with title and description')
-                return false
+            // Couple mode needs at least one memory or love message
+            const memories = content.memories?.filter(m => m?.title?.trim()) || []
+            const messages = content.admirationMessages?.filter(m => m?.trim()) || []
+            if (memories.length === 0 && messages.length === 0) {
+                newErrors.memories = 'Please add at least one memory or love message'
             }
         }
 
-        setValidationError(null)
-        return true
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
+    const handleSubmit = async () => {
         if (!validateForm()) return
 
         setIsSubmitting(true)
         try {
             await createExperience()
             navigate('/create/preview')
-        } catch (err) {
-            console.error('Failed to create experience:', err)
+        } catch (error) {
+            console.error('Failed to create experience:', error)
+            setErrors({ submit: error.message || 'Failed to create experience' })
+        } finally {
+            setIsSubmitting(false)
         }
-        setIsSubmitting(false)
     }
 
     return (
-        <div className="min-h-screen py-12 px-4">
-            <div className="max-w-2xl mx-auto">
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-10"
-                >
-                    <div className="text-4xl mb-3">
-                        {experienceType === 'CRUSH' ? '💕' : '💑'}
-                    </div>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                        {experienceType === 'CRUSH' ? 'Create Your Confession' : 'Create Your Love Story'}
-                    </h1>
-                    <p className="text-gray-600">
-                        Fill in the details to craft a beautiful experience
-                    </p>
-                </motion.div>
+        <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
+            <FloatingPetals count={8} />
 
-                {/* Form */}
-                <motion.form
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    onSubmit={handleSubmit}
-                    className="glass-card p-8"
-                >
-                    {/* Error display */}
+            <div className="page-container relative z-10 flex items-center justify-center" style={{ minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
+                <div className="w-full" style={{ maxWidth: '480px', paddingLeft: '1.25rem', paddingRight: '1.25rem' }}>
+                    {/* Progress Bar */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="progress-container"
+                    >
+                        <div className="progress-bar-wrapper">
+                            <span className="progress-step-text">Step 2 of 4</span>
+                            <div className="progress-bar">
+                                <div className="progress-fill" style={{ width: '50%' }}></div>
+                            </div>
+                            <span className="progress-label">{experienceType === 'CRUSH' ? 'Crush Mode' : 'Couple Mode'}</span>
+                        </div>
+                    </motion.div>
+
+                    {/* Header */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-center mb-8"
+                    >
+                        <div className="icon-circle mx-auto mb-4">
+                            <span>{experienceType === 'CRUSH' ? '❤️' : '💝'}</span>
+                        </div>
+                        <h1 className="section-heading">Craft Your Romantic Message</h1>
+                        <p className="section-subheading" style={{ marginBottom: '2rem' }}>
+                            Share the magic that makes your bond unique
+                        </p>
+                    </motion.div>
+
+                    {/* Form Sections */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-6"
+                    >
+                        {/* Basic Information Section */}
+                        <div className="form-section text-left">
+                            <div className="form-section-header" style={{ justifyContent: 'flex-start' }}>
+                                {/* <span className="form-section-title">Basic Information</span> */}
+                            </div>
+
+                            <div className="space-y-5 mt-5">
+                                <div>
+                                    <label className="form-label">Your Name (optional)</label>
+                                    <input
+                                        type="text"
+                                        value={senderName}
+                                        onChange={(e) => setSenderName(e.target.value)}
+                                        placeholder="Enter your name"
+                                        className="input-romantic"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label">
+                                        Their Name <span style={{ color: 'var(--color-primary)' }}>*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={recipientName}
+                                        onChange={(e) => setRecipientName(e.target.value)}
+                                        placeholder="Enter their name"
+                                        className="input-romantic"
+                                    />
+                                    {errors.recipientName && (
+                                        <p style={{ color: 'var(--color-primary)', fontSize: '0.8125rem', marginTop: '0.5rem' }}>
+                                            {errors.recipientName}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="form-label">
+                                        Their Email <span style={{ color: 'var(--color-primary)' }}>*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={recipientEmail}
+                                        onChange={(e) => setRecipientEmail(e.target.value)}
+                                        placeholder="username@gmail.com"
+                                        className="input-romantic"
+                                    />
+                                    <p className="text-pink-500 text-xs">The experience link will be sent to this email privately</p>
+                                    {errors.recipientEmail && (
+                                        <p style={{ color: 'var(--color-primary)', fontSize: '0.7125rem', marginTop: '0.5rem' }}>
+                                            {errors.recipientEmail}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mode-specific fields */}
+                        {experienceType === 'CRUSH' ? (
+                            <CrushModeFields
+                                content={content}
+                                setCrushNote={setCrushNote}
+                                error={errors.note}
+                            />
+                        ) : (
+                            <CoupleModeFields
+                                content={content}
+                                updateMemory={updateMemory}
+                                updateMemoryPhoto={updateMemoryPhoto}
+                                addMemory={addMemory}
+                                removeMemory={removeMemory}
+                                setAppreciationMessage={setAppreciationMessage}
+                                error={errors.memories}
+                            />
+                        )}
+                    </motion.div>
+
+                    {/* Submit error */}
                     <AnimatePresence>
-                        {(validationError || error) && (
+                        {errors.submit && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
+                                className="mt-6 p-4 rounded-xl text-center"
+                                style={{
+                                    background: '#FEF2F2',
+                                    border: '1px solid #FECACA',
+                                    color: '#DC2626',
+                                    fontSize: '0.875rem'
+                                }}
                             >
-                                {validationError || error}
+                                {errors.submit}
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    {/* Basic Info Section */}
-                    <div className="space-y-6 mb-8">
-                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                            <span>👤</span> Basic Information
-                        </h2>
-
-                        {/* Sender Name (optional for Crush) */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">
-                                Your Name {experienceType === 'CRUSH' && '(optional - for surprise reveal)'}
-                            </label>
-                            <input
-                                type="text"
-                                value={senderName}
-                                onChange={(e) => setSenderName(e.target.value)}
-                                placeholder={experienceType === 'CRUSH' ? 'Leave empty for anonymous' : 'Your name'}
-                                className="input-romantic"
-                            />
-                        </div>
-
-                        {/* Recipient Name */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">
-                                Their Name *
-                            </label>
-                            <input
-                                type="text"
-                                value={recipientName}
-                                onChange={(e) => setRecipientName(e.target.value)}
-                                placeholder="Who is this for?"
-                                className="input-romantic"
-                                required
-                            />
-                        </div>
-
-                        {/* Recipient Email */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-2">
-                                Their Email *
-                            </label>
-                            <input
-                                type="email"
-                                value={recipientEmail}
-                                onChange={(e) => setRecipientEmail(e.target.value)}
-                                placeholder="their.email@example.com"
-                                className="input-romantic"
-                                required
-                            />
-                            <p className="mt-1 text-xs text-gray-400">
-                                The experience link will be sent to this email
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-100 my-8" />
-
-                    {/* Content Section - Crush Mode */}
-                    {experienceType === 'CRUSH' && (
-                        <CrushModeFields
-                            content={content}
-                            updateAdmirationMessage={updateAdmirationMessage}
-                            addAdmirationMessage={addAdmirationMessage}
-                            setCustomMessage={setCustomMessage}
-                        />
-                    )}
-
-                    {/* Content Section - Couple Mode */}
-                    {experienceType === 'COUPLE' && (
-                        <CoupleModeFields
-                            content={content}
-                            updateMemory={updateMemory}
-                            addMemory={addMemory}
-                            removeMemory={removeMemory}
-                            setAppreciationMessage={setAppreciationMessage}
-                        />
-                    )}
-
-                    {/* Submit Button */}
-                    <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                        <button
-                            type="button"
-                            onClick={() => navigate('/create')}
-                            className="btn-secondary flex-1"
-                        >
-                            ← Back
-                        </button>
+                    {/* Action buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}
+                    >
                         <motion.button
-                            type="submit"
-                            disabled={isSubmitting}
                             whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                             whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                            className="btn-primary flex-1 disabled:opacity-50"
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            className="btn-primary"
+                            style={{ maxWidth: '280px', width: '100%' }}
                         >
                             {isSubmitting ? (
                                 <span className="flex items-center gap-2">
-                                    <LoadingSpinner /> Creating...
+                                    <LoadingSpinner />
+                                    Creating...
                                 </span>
                             ) : (
-                                'Preview Experience →'
+                                <>Preview Experience →</>
                             )}
                         </motion.button>
-                    </div>
-                </motion.form>
+
+                        <Link to="/create" className="btn-ghost">
+                            ← Back to Previous
+                        </Link>
+                    </motion.div>
+                </div>
             </div>
         </div>
     )
 }
 
-// Crush Mode specific fields
-function CrushModeFields({ content, updateAdmirationMessage, addAdmirationMessage, setCustomMessage }) {
-    const messages = content.admirationMessages || ['', '', '']
-
+function CrushModeFields({ content, setCrushNote, error }) {
     return (
-        <div className="space-y-6">
-            <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <span>💌</span> Admiration Messages
-            </h2>
-            <p className="text-sm text-gray-500 -mt-4">
-                These sweet messages will be revealed one by one
+        <div className="form-section text-left">
+            <div className="form-section-header" style={{ justifyContent: 'flex-start' }}>
+                <span className="form-section-icon">💌</span>
+                <span className="form-section-title">Your Love Note</span>
+            </div>
+            <p className="form-section-subtitle" style={{ textAlign: 'left', marginTop: '0.25rem' }}>
+                Write a heartfelt message that will be revealed to your crush
             </p>
 
-            {messages.map((message, index) => (
-                <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                >
-                    <label className="block text-sm font-medium text-gray-600 mb-2">
-                        Message {index + 1} {index === 0 && '*'}
-                    </label>
-                    <input
-                        type="text"
-                        value={message}
-                        onChange={(e) => updateAdmirationMessage(index, e.target.value)}
-                        placeholder={getAdmirationPlaceholder(index)}
-                        className="input-romantic"
-                    />
-                </motion.div>
-            ))}
-
-            {messages.length < 5 && (
-                <button
-                    type="button"
-                    onClick={addAdmirationMessage}
-                    className="text-rose-500 text-sm hover:text-rose-600 flex items-center gap-1"
-                >
-                    <span>+</span> Add another message
-                </button>
-            )}
-
-            <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Custom Valentine Message
-                </label>
+            <div className="mt-5">
                 <textarea
-                    value={content.customMessage || ''}
-                    onChange={(e) => setCustomMessage(e.target.value)}
-                    placeholder="Add a personal message that will appear with the Valentine proposal..."
+                    value={content.note || ''}
+                    onChange={(e) => setCrushNote(e.target.value)}
+                    placeholder="Write something from your heart... Tell them how you feel, what you admire about them, or simply express your feelings..."
                     className="textarea-romantic"
-                    rows={3}
+                    rows={6}
+                    style={{ resize: 'none' }}
                 />
+
+                {error && (
+                    <p style={{ color: 'var(--color-primary)', fontSize: '0.8125rem', marginTop: '0.5rem' }}>
+                        {error}
+                    </p>
+                )}
             </div>
         </div>
     )
 }
 
-// Couple Mode specific fields
-function CoupleModeFields({ content, updateMemory, addMemory, removeMemory, setAppreciationMessage }) {
-    const memories = content.memories || [{ title: '', description: '', date: '' }]
+function CoupleModeFields({ content, updateMemory, updateMemoryPhoto, addMemory, removeMemory, setAppreciationMessage, error }) {
+    const memories = content.memories && content.memories.length > 0
+        ? content.memories
+        : [{ title: '', date: '', description: '', photo: null }]
+
+    const handlePhotoChange = (index, event) => {
+        const file = event.target.files[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                updateMemoryPhoto(index, reader.result)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const removePhoto = (index) => {
+        updateMemoryPhoto(index, null)
+    }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <span>📸</span> Your Memories Together
-            </h2>
-            <p className="text-sm text-gray-500 -mt-4">
-                Create a timeline of your special moments
-            </p>
+        <>
+            {/* Memories Timeline Section */}
+            <div className="form-section text-left">
+                <div className="form-section-header" style={{ justifyContent: 'flex-start' }}>
+                    <span className="form-section-icon">📸</span>
+                    <span className="form-section-title">Your Journey Together</span>
+                </div>
+                <p className="form-section-subtitle" style={{ textAlign: 'left', marginTop: '0.25rem' }}>
+                    Share special moments with photos from your relationship
+                </p>
 
-            {memories.map((memory, index) => (
-                <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-5 bg-rose-50/50 rounded-xl space-y-4"
-                >
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-rose-500">Memory {index + 1}</span>
-                        {memories.length > 1 && (
+                <div className="space-y-6 mt-5">
+                    {memories.map((memory, index) => (
+                        <div
+                            key={index}
+                            className="rounded-2xl relative"
+                            style={{
+                                padding: '1rem',
+                                background: 'var(--color-gray-50)',
+                                border: '1px solid var(--color-gray-100)'
+                            }}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="form-section-label" style={{ marginBottom: 0 }}>Memory {index + 1}</span>
+                                {memories.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeMemory(index)}
+                                        style={{
+                                            color: 'var(--color-gray-400)',
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '0.875rem'
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingLeft: '0.25rem', paddingRight: '0.25rem' }}>
+                                {/* Photo Upload Area */}
+                                <div>
+                                    <label className="form-label" style={{ fontSize: '0.8125rem' }}>Photo</label>
+                                    <div
+                                        className="relative rounded-xl overflow-hidden"
+                                        style={{
+                                            background: 'white',
+                                            border: '2px dashed var(--color-gray-200)',
+                                            minHeight: memory.photo ? '200px' : '100px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        {memory.photo ? (
+                                            <div className="relative w-full">
+                                                <img
+                                                    src={memory.photo}
+                                                    alt={`Photo for memory ${index + 1}`}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '200px',
+                                                        objectFit: 'cover',
+                                                        borderRadius: '0.75rem'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removePhoto(index)}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '8px',
+                                                        right: '8px',
+                                                        background: 'rgba(0,0,0,0.6)',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '50%',
+                                                        width: '28px',
+                                                        height: '28px',
+                                                        cursor: 'pointer',
+                                                        fontSize: '14px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <label
+                                                className="flex flex-col items-center justify-center w-full h-full cursor-pointer p-4"
+                                                style={{ minHeight: '100px' }}
+                                            >
+                                                <span style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📷</span>
+                                                <span style={{
+                                                    fontSize: '0.8125rem',
+                                                    color: 'var(--color-gray-500)',
+                                                    textAlign: 'center'
+                                                }}>
+                                                    Add a photo of this moment
+                                                </span>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handlePhotoChange(index, e)}
+                                                    style={{ display: 'none' }}
+                                                />
+                                            </label>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="form-label" style={{ fontSize: '0.8125rem' }}>Title</label>
+                                    <input
+                                        type="text"
+                                        value={memory.title || ''}
+                                        onChange={(e) => updateMemory(index, 'title', e.target.value)}
+                                        placeholder="Our first date..."
+                                        className="input-romantic"
+                                        style={{ background: 'white' }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label" style={{ fontSize: '0.8125rem' }}>Date (optional)</label>
+                                    <input
+                                        type="text"
+                                        value={memory.date || ''}
+                                        onChange={(e) => updateMemory(index, 'date', e.target.value)}
+                                        placeholder="February 14, 2024"
+                                        className="input-romantic"
+                                        style={{ background: 'white' }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="form-label" style={{ fontSize: '0.8125rem' }}>Description</label>
+                                    <textarea
+                                        value={memory.description || ''}
+                                        onChange={(e) => updateMemory(index, 'description', e.target.value)}
+                                        placeholder="Share what made this moment special..."
+                                        className="textarea-romantic"
+                                        style={{ background: 'white' }}
+                                        rows={2}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {memories.length < 6 && (
+                        <div style={{ paddingTop: '1rem', marginTop: '0.5rem' }}>
                             <button
                                 type="button"
-                                onClick={() => removeMemory(index)}
-                                className="text-gray-400 hover:text-red-500 text-sm"
+                                onClick={addMemory}
+                                className="btn-ghost"
+                                style={{ padding: 0 }}
                             >
-                                Remove
+                                <span style={{ fontSize: '1rem', marginRight: '0.25rem' }}>⊕</span> Add another memory
                             </button>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
-                    <input
-                        type="text"
-                        value={memory.title}
-                        onChange={(e) => updateMemory(index, 'title', e.target.value)}
-                        placeholder="Memory title (e.g., 'Our First Date')"
-                        className="input-romantic"
-                    />
+                    {error && (
+                        <p style={{ color: 'var(--color-primary)', fontSize: '0.8125rem' }}>
+                            {error}
+                        </p>
+                    )}
+                </div>
+            </div>
 
-                    <textarea
-                        value={memory.description}
-                        onChange={(e) => updateMemory(index, 'description', e.target.value)}
-                        placeholder="Describe this special moment..."
-                        className="textarea-romantic"
-                        rows={2}
-                    />
-
-                    <input
-                        type="text"
-                        value={memory.date}
-                        onChange={(e) => updateMemory(index, 'date', e.target.value)}
-                        placeholder="Date (optional, e.g., 'January 2024')"
-                        className="input-romantic"
-                    />
-                </motion.div>
-            ))}
-
-            {memories.length < 6 && (
-                <button
-                    type="button"
-                    onClick={addMemory}
-                    className="text-rose-500 text-sm hover:text-rose-600 flex items-center gap-1"
-                >
-                    <span>+</span> Add another memory
-                </button>
-            )}
-
-            <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Appreciation Message
-                </label>
+            {/* Appreciation Message */}
+            <div className="form-section text-left">
+                <label className="form-label">Final Appreciation Message</label>
                 <textarea
                     value={content.appreciationMessage || ''}
                     onChange={(e) => setAppreciationMessage(e.target.value)}
-                    placeholder="Write a heartfelt message expressing your love and appreciation..."
+                    placeholder="Express your deepest love and appreciation..."
                     className="textarea-romantic"
                     rows={4}
                 />
             </div>
-        </div>
+        </>
     )
 }
 
@@ -391,15 +523,4 @@ function LoadingSpinner() {
             />
         </svg>
     )
-}
-
-function getAdmirationPlaceholder(index) {
-    const placeholders = [
-        "I love the way you smile...",
-        "Your kindness always amazes me...",
-        "Every moment with you feels special...",
-        "You make my world brighter...",
-        "I can't stop thinking about you...",
-    ]
-    return placeholders[index] || "Add your message..."
 }
