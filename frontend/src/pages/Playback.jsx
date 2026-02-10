@@ -113,8 +113,8 @@ export default function Playback() {
         <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
             <FloatingPetals count={12} />
 
-            <div className="relative z-10 min-h-screen pt-8 pb-16 px-4">
-                <div className="max-w-md mx-auto">
+            <div className="relative z-10 flex items-center justify-center" style={{ minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
+                <div className="w-full max-w-sm px-8">
                     {experience.experience_type === 'CRUSH' ? (
                         <CrushExperience
                             recipientName={experience.recipient_name}

@@ -38,7 +38,7 @@ serve(async (req) => {
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const resendApiKey = Deno.env.get("RESEND_API_KEY")!;
-        const appUrl = Deno.env.get("APP_URL") || "https://cupidsarrow.app";
+        const appUrl = Deno.env.get("APP_URL") || "https://cupidsarrow.space";
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -97,7 +97,7 @@ serve(async (req) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                from: "Cupid's Arrow <onboarding@resend.dev>",
+                from: "Cupid's Arrow <love@cupidsarrow.space>",
                 to: [experience.recipient_email],
                 subject: subject,
                 html: emailHtml,

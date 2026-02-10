@@ -95,7 +95,7 @@ serve(async (req) => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    from: "Cupid's Arrow <onboarding@resend.dev>",
+                    from: "Cupid's Arrow <love@cupidsarrow.space>",
                     to: [experience.sender_email],
                     subject: `💕 ${experience.recipient_name || "Your Valentine"} replied to your message!`,
                     html: emailHtml,

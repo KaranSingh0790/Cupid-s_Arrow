@@ -139,7 +139,7 @@ export const useExperienceStore = create((set, get) => ({
         }
     },
 
-    // Create payment via Edge Function
+    // Create payment via Edge Function (Razorpay - unchanged)
     createPayment: async () => {
         const { experienceId } = get()
 
@@ -163,6 +163,37 @@ export const useExperienceStore = create((set, get) => ({
                 isLoading: false,
             })
 
+            return response
+        } catch (error) {
+            set({ error: error.message, isLoading: false })
+            throw error
+        }
+    },
+
+    // Create Stripe payment session (NEW - for international payments)
+    createStripePayment: async (currency = 'usd') => {
+        const { experienceId } = get()
+
+        if (!experienceId) {
+            throw new Error('No experience to pay for')
+        }
+
+        set({ isLoading: true, error: null })
+
+        try {
+            const response = await invokeFunction('createStripePayment', {
+                experience_id: experienceId,
+                currency: currency,
+                return_url: window.location.origin,
+            })
+
+            if (!response.success) {
+                throw new Error(response.error || 'Failed to create Stripe payment')
+            }
+
+            set({ isLoading: false })
+
+            // Return checkout URL for redirect
             return response
         } catch (error) {
             set({ error: error.message, isLoading: false })

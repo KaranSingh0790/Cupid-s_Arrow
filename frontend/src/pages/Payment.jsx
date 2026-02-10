@@ -1,17 +1,50 @@
-// Payment Page - Razorpay checkout integration
+// Payment Page - Dual Gateway Support (Razorpay + Stripe)
 // Elegant design matching reference screenshots - NO NAVBAR
+// NOTE: All existing Razorpay logic is preserved - Stripe is additive only
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useExperienceStore } from '../stores/experienceStore'
+// Razorpay - existing imports unchanged
 import { initializePayment, formatCurrency } from '../lib/razorpay'
 import { invokeFunction } from '../lib/supabase'
 import { FloatingPetals } from '../components/animations/Petals'
+// Stripe - new imports
+import {
+    detectPaymentGateway,
+    detectCurrency,
+    getStripePrice,
+    formatStripeCurrency,
+    redirectToStripeCheckout,
+    getGatewayDisplayInfo
+} from '../lib/stripe'
 
 export default function Payment() {
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const [isProcessing, setIsProcessing] = useState(false)
     const [paymentError, setPaymentError] = useState(null)
+
+    // Check for URL parameter to force gateway (for testing)
+    // Usage: /create/payment?gateway=stripe OR /create/payment?gateway=razorpay
+    const forceGateway = searchParams.get('gateway')
+
+    // Auto-detect gateway based on user location (can be overridden via URL or toggle)
+    const [paymentGateway, setPaymentGateway] = useState(() => {
+        if (forceGateway === 'stripe' || forceGateway === 'razorpay') {
+            return forceGateway
+        }
+        return detectPaymentGateway()
+    })
+    const [currency, setCurrency] = useState(() => {
+        if (forceGateway === 'stripe') return 'usd'
+        if (forceGateway === 'razorpay') return 'inr'
+        const detected = detectCurrency()
+        // If gateway is stripe but currency is inr (not supported by Stripe), default to usd
+        const gateway = forceGateway || detectPaymentGateway()
+        if (gateway === 'stripe' && detected === 'inr') return 'usd'
+        return detected
+    })
 
     const {
         experienceId,
@@ -20,6 +53,7 @@ export default function Payment() {
         recipientEmail,
         amountPaise,
         createPayment,
+        createStripePayment,
         goToStep,
     } = useExperienceStore()
 
@@ -34,7 +68,18 @@ export default function Payment() {
         return null
     }
 
-    const handlePayment = async () => {
+    // Get display info based on selected gateway
+    const gatewayInfo = getGatewayDisplayInfo(paymentGateway)
+
+    // Calculate display price based on gateway
+    const displayPrice = paymentGateway === 'razorpay'
+        ? formatCurrency(amountPaise)
+        : formatStripeCurrency(getStripePrice(experienceType, currency), currency)
+
+    // ============================================
+    // RAZORPAY PAYMENT HANDLER (UNCHANGED)
+    // ============================================
+    const handleRazorpayPayment = async () => {
         setIsProcessing(true)
         setPaymentError(null)
 
@@ -91,6 +136,55 @@ export default function Payment() {
             console.error('Payment initialization failed:', error)
             setPaymentError(error.message || 'Failed to initialize payment')
             setIsProcessing(false)
+        }
+    }
+
+    // ============================================
+    // STRIPE PAYMENT HANDLER (NEW)
+    // ============================================
+    const handleStripePayment = async () => {
+        setIsProcessing(true)
+        setPaymentError(null)
+
+        try {
+            // Create Stripe checkout session via Edge Function
+            const response = await createStripePayment(currency)
+
+            if (response.checkout_url) {
+                // Redirect to Stripe Checkout
+                redirectToStripeCheckout(response.checkout_url)
+            } else {
+                throw new Error('No checkout URL received')
+            }
+        } catch (error) {
+            console.error('Stripe payment initialization failed:', error)
+            setPaymentError(error.message || 'Failed to initialize payment')
+            setIsProcessing(false)
+        }
+    }
+
+    // ============================================
+    // UNIFIED PAYMENT HANDLER
+    // ============================================
+    const handlePayment = async () => {
+        if (paymentGateway === 'razorpay') {
+            await handleRazorpayPayment()
+        } else {
+            await handleStripePayment()
+        }
+    }
+
+    // Toggle gateway (for users who want to switch)
+    const toggleGateway = () => {
+        const newGateway = paymentGateway === 'razorpay' ? 'stripe' : 'razorpay'
+        setPaymentGateway(newGateway)
+        if (newGateway === 'razorpay') {
+            setCurrency('inr')
+        } else {
+            // detectCurrency() returns 'inr' for India, but Stripe doesn't support INR
+            // Default to USD when switching to Stripe
+            const detected = detectCurrency()
+            setCurrency(detected === 'inr' ? 'usd' : detected)
         }
     }
 
@@ -153,7 +247,7 @@ export default function Payment() {
                                     </div>
                                 </div>
                             </div>
-                            <span className="order-item-price">{formatCurrency(amountPaise)}</span>
+                            <span className="order-item-price">{displayPrice}</span>
                         </div>
 
                         <div className="order-recipient">
@@ -163,7 +257,7 @@ export default function Payment() {
 
                         <div className="order-total">
                             <span className="order-total-label">Total</span>
-                            <span className="order-total-price">{formatCurrency(amountPaise)}</span>
+                            <span className="order-total-price">{displayPrice}</span>
                         </div>
                     </motion.div>
 
@@ -175,22 +269,16 @@ export default function Payment() {
                         className="glass-card p-6 text-center"
                         style={{ marginBottom: '0.5rem' }}
                     >
-                        {/* Payment methods */}
+                        {/* Payment methods - dynamic based on gateway */}
                         <div className="payment-methods">
                             <div className="payment-methods-label">Pay Securely With</div>
                             <div className="payment-icons">
-                                <div className="payment-icon">
-                                    <span>📱</span>
-                                    <span>UPI</span>
-                                </div>
-                                <div className="payment-icon">
-                                    <span>💳</span>
-                                    <span>Card</span>
-                                </div>
-                                <div className="payment-icon">
-                                    <span>🏦</span>
-                                    <span>Net</span>
-                                </div>
+                                {gatewayInfo.methods.map((method, index) => (
+                                    <div className="payment-icon" key={index}>
+                                        <span>{method.icon}</span>
+                                        <span>{method.label}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
@@ -208,7 +296,7 @@ export default function Payment() {
                                     Processing...
                                 </span>
                             ) : (
-                                <>Pay {formatCurrency(amountPaise)} →</>
+                                <>Pay {displayPrice} →</>
                             )}
                         </motion.button>
 
@@ -225,6 +313,27 @@ export default function Payment() {
                                 {paymentError}
                             </motion.div>
                         )}
+
+                        {/* Gateway toggle - subtle link */}
+                        <div className="text-center" style={{ marginTop: '0.75rem' }}>
+                            <button
+                                onClick={toggleGateway}
+                                disabled={isProcessing}
+                                className="text-xs"
+                                style={{
+                                    color: 'var(--color-gray-500)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline',
+                                    opacity: 0.7
+                                }}
+                            >
+                                {paymentGateway === 'razorpay'
+                                    ? 'Pay with international card instead'
+                                    : 'Pay with UPI/Indian methods instead'}
+                            </button>
+                        </div>
 
                         {/* Back link */}
                         <div className="text-center" style={{ marginTop: '0.5rem' }}>

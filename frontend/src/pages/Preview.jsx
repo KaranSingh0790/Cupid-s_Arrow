@@ -37,8 +37,8 @@ export default function Preview() {
         <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--bg-main)' }}>
             <FloatingPetals count={6} />
 
-            <div className="page-container relative z-10 flex flex-col" style={{ minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
-                <div className="w-full mx-auto my-auto" style={{ maxWidth: '420px', paddingLeft: '1rem', paddingRight: '1rem' }}>
+            <div className="page-container relative z-10 flex items-center justify-center" style={{ minHeight: '100vh', paddingTop: '2rem', paddingBottom: '2rem' }}>
+                <div className="w-full max-w-sm px-8">
                     {/* Progress Bar */}
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
