@@ -240,50 +240,6 @@ export default function Payment() {
                                         }
                                     </p>
 
-                                    {/* On mobile, also show the deep link button as a secondary option */}
-                                    {isMobile && (
-                                        <div style={{ marginTop: '0.5rem', width: '100%', textAlign: 'center' }}>
-                                            <p
-                                                style={{
-                                                    fontSize: '0.7rem',
-                                                    color: 'var(--color-gray-400)',
-                                                    marginBottom: '0.5rem',
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: '0.05em',
-                                                }}
-                                            >
-                                                — or open UPI app directly —
-                                            </p>
-                                            <motion.button
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                onClick={handleUPIPayment}
-                                                style={{
-                                                    background: 'transparent',
-                                                    color: 'var(--color-primary)',
-                                                    border: '1.5px solid var(--color-primary)',
-                                                    borderRadius: '999px',
-                                                    padding: '10px 28px',
-                                                    fontSize: '0.85rem',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer',
-                                                }}
-                                                id="pay-upi-button"
-                                            >
-                                                Open UPI App — Pay {displayPrice} →
-                                            </motion.button>
-                                            <p
-                                                style={{
-                                                    fontSize: '0.7rem',
-                                                    color: 'var(--color-gray-400)',
-                                                    marginTop: '6px',
-                                                }}
-                                            >
-                                                May not work on all phones / banks
-                                            </p>
-                                        </div>
-                                    )}
-
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
