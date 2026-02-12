@@ -7,7 +7,7 @@ import { useExperienceStore } from '../stores/experienceStore'
 import { FloatingPetals } from '../components/animations/Petals'
 import CrushExperience from '../components/experience/CrushExperience'
 import CoupleExperience from '../components/experience/CoupleExperience'
-import { formatCurrency } from '../lib/razorpay'
+import { formatPrice } from '../lib/paymentUtils'
 
 export default function Preview() {
     const navigate = useNavigate()
@@ -18,7 +18,6 @@ export default function Preview() {
         recipientName,
         senderName,
         content,
-        amountPaise,
         experienceId,
     } = useExperienceStore()
 
@@ -46,9 +45,9 @@ export default function Preview() {
                         className="progress-container"
                     >
                         <div className="progress-bar-wrapper">
-                            <span className="progress-step-text">Step 3 of 4</span>
+                            <span className="progress-step-text">Step 3 of 5</span>
                             <div className="progress-bar">
-                                <div className="progress-fill" style={{ width: '75%' }}></div>
+                                <div className="progress-fill" style={{ width: '60%' }}></div>
                             </div>
                             <span className="progress-label">Preview</span>
                         </div>
@@ -136,7 +135,7 @@ export default function Preview() {
                             className="btn-primary"
                             style={{ maxWidth: '280px', width: '100%' }}
                         >
-                            Unlock & Send for {formatCurrency(amountPaise)} →
+                            Unlock & Send for {formatPrice(experienceType)} →
                         </motion.button>
 
                         {/* Locked notice - now under the button */}

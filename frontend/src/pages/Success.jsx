@@ -64,10 +64,10 @@ export default function Success() {
                             style={{ marginBottom: '2rem' }}
                         >
                             <h1 className="section-heading" style={{ marginBottom: '0.75rem' }}>
-                                Your Love is on its Way!
+                                Payment Submitted! 💌
                             </h1>
                             <p style={{ color: 'var(--color-gray-600)' }}>
-                                A beautiful email has been sent to <strong>{displayName}</strong>
+                                Your valentine for <strong>{displayName}</strong> is being verified and will be delivered shortly.
                             </p>
                         </motion.div>
 
@@ -83,25 +83,25 @@ export default function Success() {
                                 padding: '1.5rem'
                             }}
                         >
-                            <div className="form-section-label mb-3">Email Sent Successfully</div>
+                            <div className="form-section-label mb-3">What Happens Next</div>
 
                             <div className="what-next-list" style={{ gap: '0.75rem' }}>
                                 <div className="what-next-item">
                                     <span style={{ color: 'var(--color-primary)' }}>✓</span>
                                     <span className="what-next-text">
-                                        {displayName} will receive an email at {displayEmail}
+                                        Your payment is being verified (usually within minutes)
                                     </span>
                                 </div>
                                 <div className="what-next-item">
-                                    <span style={{ color: 'var(--color-primary)' }}>✓</span>
+                                    <span style={{ color: 'var(--color-primary)' }}>✉️</span>
                                     <span className="what-next-text">
-                                        They'll click the link to experience your creation
+                                        Once verified, {displayName} will receive a beautiful email at {displayEmail}
                                     </span>
                                 </div>
                                 <div className="what-next-item">
-                                    <span style={{ color: 'var(--color-primary)' }}>✓</span>
+                                    <span style={{ color: 'var(--color-primary)' }}>✨</span>
                                     <span className="what-next-text">
-                                        The full romantic experience will play just for them
+                                        They'll click the link and experience the full romantic surprise
                                     </span>
                                 </div>
                             </div>

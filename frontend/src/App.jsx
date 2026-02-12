@@ -5,11 +5,9 @@ import ModeSelector from './pages/ModeSelector'
 import ExperienceBuilder from './pages/ExperienceBuilder'
 import Preview from './pages/Preview'
 import Payment from './pages/Payment'
+import PaymentConfirmation from './pages/PaymentConfirmation'
 import Success from './pages/Success'
 import Playback from './pages/Playback'
-// Stripe payment pages
-import StripeSuccess from './pages/StripeSuccess'
-import StripeCancel from './pages/StripeCancel'
 import './index.css'
 
 function App() {
@@ -24,11 +22,8 @@ function App() {
         <Route path="/create/form" element={<ExperienceBuilder />} />
         <Route path="/create/preview" element={<Preview />} />
         <Route path="/create/payment" element={<Payment />} />
+        <Route path="/create/confirm" element={<PaymentConfirmation />} />
         <Route path="/create/success" element={<Success />} />
-
-        {/* Stripe payment redirects */}
-        <Route path="/create/payment/success" element={<StripeSuccess />} />
-        <Route path="/create/payment/cancel" element={<StripeCancel />} />
 
         {/* Experience playback for recipients */}
         <Route path="/v/:id" element={<Playback />} />
