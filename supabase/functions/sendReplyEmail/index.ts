@@ -126,7 +126,6 @@ serve(async (req) => {
     }
 });
 
-// Build reply email HTML
 function buildReplyEmailHtml(params: {
     senderName: string;
     recipientName: string;

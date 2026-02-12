@@ -191,96 +191,113 @@ export default function Payment() {
                         {/* ── INDIA: UPI ── */}
                         {isIndia && (
                             <>
-                                {isMobile ? (
-                                    /* ── MOBILE: Deep link button ── */
-                                    <div className="flex flex-col items-center gap-3">
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={handleUPIPayment}
-                                            className="btn-primary w-2/3"
-                                            id="pay-upi-button"
-                                        >
-                                            Pay {displayPrice} via UPI →
-                                        </motion.button>
+                                {/* ── QR Code (shown on ALL devices) ── */}
+                                <div className="flex flex-col items-center gap-3">
+                                    <p
+                                        style={{
+                                            fontSize: '0.875rem',
+                                            color: 'var(--color-gray-600)',
+                                            marginBottom: '0.5rem',
+                                        }}
+                                    >
+                                        {isMobile
+                                            ? <>Long-press QR to pay <strong>{displayPrice}</strong>, or screenshot &amp; scan from your UPI app</>
+                                            : <>Scan with any UPI app to pay{' '}<strong>{displayPrice}</strong></>
+                                        }
+                                    </p>
 
-                                        <p
-                                            style={{
-                                                fontSize: '0.8rem',
-                                                color: 'var(--color-gray-500)',
-                                                lineHeight: 1.5,
-                                                marginTop: '0.5rem',
-                                                textAlign: 'center',
-                                            }}
-                                        >
-                                            You'll be redirected to Google Pay with the amount already filled.
-                                            <br />
-                                            Complete the payment and return here ❤️
-                                        </p>
+                                    <div
+                                        style={{
+                                            background: 'white',
+                                            borderRadius: '16px',
+                                            padding: '16px',
+                                            boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+                                            display: 'inline-block',
+                                        }}
+                                    >
+                                        <QRCodeSVG
+                                            value={qrData}
+                                            size={isMobile ? 200 : 220}
+                                            level="M"
+                                            includeMargin={false}
+                                            bgColor="#ffffff"
+                                            fgColor="#1a1a1a"
+                                        />
                                     </div>
-                                ) : (
-                                    /* ── DESKTOP: QR Code ── */
-                                    <div className="flex flex-col items-center gap-3">
-                                        <p
-                                            style={{
-                                                fontSize: '0.875rem',
-                                                color: 'var(--color-gray-600)',
-                                                marginBottom: '0.5rem',
-                                            }}
-                                        >
-                                            Scan with any UPI app to pay{' '}
-                                            <strong>{displayPrice}</strong>
-                                        </p>
 
-                                        <div
-                                            style={{
-                                                background: 'white',
-                                                borderRadius: '16px',
-                                                padding: '16px',
-                                                boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
-                                                display: 'inline-block',
-                                            }}
-                                        >
-                                            <QRCodeSVG
-                                                value={qrData}
-                                                size={220}
-                                                level="M"
-                                                includeMargin={false}
-                                                bgColor="#ffffff"
-                                                fgColor="#1a1a1a"
-                                            />
+                                    <p
+                                        style={{
+                                            fontSize: '0.8rem',
+                                            color: 'var(--color-gray-500)',
+                                            lineHeight: 1.5,
+                                            textAlign: 'center',
+                                            marginTop: '0.25rem',
+                                        }}
+                                    >
+                                        {isMobile
+                                            ? <>Open Google Pay / PhonePe / Paytm → Scan QR or use "Pay by QR" option<br />Amount is pre-filled ❤️</>
+                                            : <>Scan the QR — Google Pay / PhonePe / Paytm will open with the amount already filled.<br />Complete the payment and return here ❤️</>
+                                        }
+                                    </p>
+
+                                    {/* On mobile, also show the deep link button as a secondary option */}
+                                    {isMobile && (
+                                        <div style={{ marginTop: '0.5rem', width: '100%', textAlign: 'center' }}>
+                                            <p
+                                                style={{
+                                                    fontSize: '0.7rem',
+                                                    color: 'var(--color-gray-400)',
+                                                    marginBottom: '0.5rem',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.05em',
+                                                }}
+                                            >
+                                                — or open UPI app directly —
+                                            </p>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={handleUPIPayment}
+                                                style={{
+                                                    background: 'transparent',
+                                                    color: 'var(--color-primary)',
+                                                    border: '1.5px solid var(--color-primary)',
+                                                    borderRadius: '999px',
+                                                    padding: '10px 28px',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer',
+                                                }}
+                                                id="pay-upi-button"
+                                            >
+                                                Open UPI App — Pay {displayPrice} →
+                                            </motion.button>
+                                            <p
+                                                style={{
+                                                    fontSize: '0.7rem',
+                                                    color: 'var(--color-gray-400)',
+                                                    marginTop: '6px',
+                                                }}
+                                            >
+                                                May not work on all phones / banks
+                                            </p>
                                         </div>
+                                    )}
 
-                                        <p
-                                            style={{
-                                                fontSize: '0.8rem',
-                                                color: 'var(--color-gray-500)',
-                                                lineHeight: 1.5,
-                                                textAlign: 'center',
-                                                marginTop: '0.25rem',
-                                            }}
-                                        >
-                                            Scan the QR — Google Pay / PhonePe / Paytm will open
-                                            with the amount already filled.
-                                            <br />
-                                            Complete the payment and return here ❤️
-                                        </p>
-
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => {
-                                                goToStep('confirmation')
-                                                navigate('/create/confirm')
-                                            }}
-                                            className="btn-primary"
-                                            style={{ marginTop: '0.5rem' }}
-                                            id="paid-upi-confirm"
-                                        >
-                                            I've Paid — Confirm Order →
-                                        </motion.button>
-                                    </div>
-                                )}
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => {
+                                            goToStep('confirmation')
+                                            navigate('/create/confirm')
+                                        }}
+                                        className="btn-primary"
+                                        style={{ marginTop: '0.5rem' }}
+                                        id="paid-upi-confirm"
+                                    >
+                                        I've Paid — Confirm Order →
+                                    </motion.button>
+                                </div>
 
                                 {/* ═══════════════════════════════════════ */}
                                 {/* FALLBACK OPTIONS (HDFC / failed links) */}
