@@ -10,7 +10,7 @@ const PAYPAL_USERNAME = 'KaranS669'
 
 // Pricing
 const PRICES = {
-    inr: { crush: 49, couple: 149 },
+    inr: { crush: 49, couple: 99 },
     usd: { crush: 1.99, couple: 2.99 },
 }
 
